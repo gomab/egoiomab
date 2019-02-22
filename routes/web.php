@@ -22,7 +22,7 @@ Route::get('/home', 'HomeController@index')->name('home');
 
 /** Route admin */
 
-Route::group(['as'=>'admin.','prefix'=> 'admin', 'namespace'=>'admin', 'middleware'=>['auth','admin']],
+Route::group(['as'=>'admin.','prefix'=> 'admin', 'namespace'=>'Admin', 'middleware'=>['auth','admin']],
     function (){
         Route::get('dashboard', 'DashboardController@index')->name('dashboard');
         //  Route::resource('tag', 'TagController');
@@ -32,7 +32,7 @@ Route::group(['as'=>'admin.','prefix'=> 'admin', 'namespace'=>'admin', 'middlewa
 
 /** Route Author */
 
-Route::group(['as' => 'author.','prefix'=>'author', 'namespace'=>'author', 'middleware'=>['auth','author']],
+Route::group(['as' => 'author.','prefix'=>'author', 'namespace'=>'Author', 'middleware'=>['auth','author']],
     function (){
         Route::get('dashboard', 'DashboardController@index')->name('dashboard');
     });
@@ -41,7 +41,7 @@ Route::group(['as' => 'author.','prefix'=>'author', 'namespace'=>'author', 'midd
 
 /** Route Consumer */
 
-Route::group(['as' => 'consumer.','prefix'=>'consumer', 'namespace'=>'consumer', 'middleware' => ['auth', 'consumer']],
+Route::group(['as' => 'consumer.','prefix'=>'consumer', 'namespace'=>'Consumer', 'middleware' => ['auth', 'consumer']],
     function (){
         Route::get('dashboard', 'DashboardController@index')->name('dashboard');
     });
