@@ -1,0 +1,925 @@
+
+  ____________________________________Multi-auth and Roles Relationship____________________________________________
+
+
+1. run server
+    $ php artisan serve
+
+2. Auth
+    $ php artisan make:auth
+
+3. Set-up migrations create_users_table.php
+
+4. Make Role model
+    $ php artisan make:model Role -m
+
+5. Set-up migration Role_table.php
+
+6. set-up Model Role.php
+
+        public function users(){}
+
+7. set-up Model User.php
+
+        public function role(){}
+
+8. Make seed user
+    $ php artisan make:seed UsersTableSeeder
+
+
+9. Make seed role
+    $ php artisan make:seed RolesTableSeeder
+
+
+10. Set-up RolesTablesSeeders
+
+11. Set-up UsersTablesSeeders
+
+12. Set-up database (.env file and phpadmin)
+
+13. Migrate DB
+    $ php artisan migrate
+
+14. Set-up ./seed/DatabaseSeeder.php
+    public function run(){}
+
+15. Migrate seed
+    $ php artisan db:seed
+
+
+16. Set-up tinker
+    $ php artisan tinker
+
+            App\User::find(1);
+            App\User::find(1)->role;
+            App\Role::find(1)
+            App\Role::find(1)->users
+
+
+
+
+/************Commentaire***********/
+
+* Mettre 3 comme valeur par défaut role_id parce que j'aurai 3 types de user
+  (Put 3 as default value for role_id because i will have 3 types of users.)
+
+* Name = user
+
+* Ne pas oublié le 3e role dans les seeders
+  (Don't forget the 3tht role in the seeders)
+
+
+  ____________________________________End Multi-auth and Roles Relationship____________________________________________
+
+
+___________________________________________Multi Auth Middleware_____________________________________________________________________________
+
+1. Make Admin/Dashboard Controller -R
+    $ php artisan make:controller Admin/DashboardController
+
+2. Make Author/Dashboard Controller -R
+    $ php artisan make:controller Author/DashboardController
+
+3. Make admin middleware
+    $ php artisan make:middleware AdminMiddleware
+
+4. Make author middleware
+    $ php artisan make:middleware AuthorMiddleware
+
+5. Set-up app/Http/kernel.php
+    Add -> 'admin'    / AdminMiddleware::class, / in protected $routeMiddleware
+
+
+6. Set-up app/Http/kernel.php
+    Add -> 'author'    / AuthorMiddleware::class, / in protected $routeMiddleware
+
+7. Set-up  group Route Admin => ./routes/web.php and route::dashboard->index -> V
+
+8. Set-up  group Route Author => ./routes/web.php and route::dashboard->index -> V
+
+9. Create folder ./views/admin/dashboard.blade.php  -> V
+
+10. Create folder ./views/author/dashboard.blade.php -> V
+
+11. copy content of ./resources/views/home.blade.php in dashboard(author and admin) -> V
+
+12. Set-up admin/dashboard.blade.php
+    / You are logged in! as <strong>{{ Auth::user()->name }}</strong>/ --> V
+
+13. Set-up author/dashboard.blade.php
+    / You are logged in! as <strong>{{ Auth::user()->name }}</strong>/ --> V
+
+14. Set-up ./app/http/Controllers/Admin/DashboardController.php  --> V
+     / public function index() /
+
+15. Set-up ./app/http/Controllers/Author/DashboardController.php  --> V
+     / public function index() /
+
+16. Setup  ./app/http/Middleware/AdminMiddleware.php  -->
+
+         if(Auth::check() && Auth::user()->role->id = 1){
+            return $next($request)
+         }else{
+            return $redirect()->route('login')
+         }
+        /if/
+
+17. See list route --> V
+    $ php artisan r:l
+
+18. Setup  ./app/http/Middleware/AuthorMiddleware.php --> V
+        /if/
+
+19. Setup ./app/http/Middleware/RedirectIfAuthenticated.php  --> V
+    /if -elseif - else ine function handle/
+
+20. Setup   ./app/Http/Controllers/Auth/LoginController.php  --> V
+    Delete 'home'
+    -> protected $redirectTo ;
+
+    -> Setup public function __construct()
+
+21. Setup   ./app/Http/Controllers/Auth/RegisterController.php  --> V
+    Delete 'home'
+    -> protected $redirectTo ;
+
+    -> Setup public function __construct()
+
+22. Setup   ./app/Http/Controllers/Auth/ResetPasswordController.php  --> V
+    Delete 'home'
+    -> protected $redirectTo ;
+
+    -> Setup public function __construct()
+
+
+/***********************Comment**********************************************
+1. make User/Dashboard Controller and Middleware
+
+3. Set
+
+_____________________________________________End Multi Auth Middleware_____________________________________________________________________
+
+_____________________________________________Frontend Layout__________________________________________________
+
+1. Download Bona
+    https://colorlib.com/wp/template/bona/
+
+2. download backend layout
+    https://github.com/gurayyarar/AdminBSBMaterialDesign
+
+3. Create folder     ./public/assets *
+
+4. create folder ../../assets/backend and frontend *
+
+5. Create ../../fronted/css and js  *
+
+6. Copy content common-css to ../public/assets/frontend/css *
+
+7. Copy content common-js to ../public/assets/frontend/js *
+
+8. Copy bona/image and fonts to ../public/assets/fronted/
+
+9. Create ../resources/views/layouts/  fronted
+
+10. Copy ../resources/views/layouts/app.blade.php to ../resources/views/layouts/fronted/app.blade.php
+
+11. Delete <body> Content, <style> content and <script> to fronted/app.blade.php
+
+12. Copy to page bona/front-page-category section : header , main-slider, blog-area section, footer in <body> ../fronted/app.blade.php
+
+13. Create folder  ../layouts/fronted/partial
+
+14. create ../fronted/partial/ header.blade.php
+
+15. Cut section <header> in ../frontend/app.blade.php to ../frontend/partial/header.blade.php
+
+16. Include ../partial/header to ../fronted/app.blade.php  =>  @include('layouts.fronted.partial.header')
+
+17. (14-15-16) for footer
+
+18. Delete content ../layouts/welcome.blade.php
+
+19. Setup ../layouts/welcome.blade.php
+        @extends('layouts.frontend.app')
+
+        @section('content')
+          -----
+        @endsection
+
+
+20. Copy section <main-slider> and <blog-area section> in welcome.blade.php =>  @section('content')
+
+21. Set-up ../frontend/app.blade.php
+        @yield('content')
+
+22. Set-up .env
+        APP_NAME=blog
+
+23. Set-up  ../frontend/app.blade.php in <title>@yield('title') - </title>
+
+24. Add section title in ../layouts/welcome.blade.php
+    @section('title', 'login')
+
+25. Copy Font and Styleshit content in bona/front-page-category to app.blade.php
+
+26. In ../frontend/app.blade.php
+            @stack('css')
+
+27. create section in welcome.blade.php
+            @push('css')
+
+            @endpush
+
+28. Cut in ../frontend/app.blade.php ---- To @push section (welcome.blade.php)
+
+           <link href="front-page-category/css/styles.css" rel="stylesheet">
+           <link href="front-page-category/css/responsive.css" rel="stylesheet">
+
+29. Copy Script content in bona/front-page-category to app.blade.php
+
+29. (26 & 27) for js
+
+30. Set-up asset{} to ../frontend/app.blade.php
+        <link href="{{ asset('assets/frontend/css/bootstrap.css') }}" rel="stylesheet">
+
+
+31. copy style fichier of bony/front-page-category to ../public/assets/frontend/css/ home/
+
+32. Set-up asset ton welcome.blade.php
+         <link href="{{ asset('assets/frontend/css/home/styles.css') }}" rel="stylesheet">
+
+33. Delete Tag img to header.blade.php
+        <img src="images/logo.png" alt="Logo Image">
+
+33. setp-up asset js to app.blade.php
+
+34. Cut  <script src="{{ asset('assets/frontend/js/swiper.js') }}"></script> to puhs js
+
+35. Setup ../views/auth/login.blade.php
+    @extends('layouts.fronted.app')
+
+36. Setup ../views/auth/login.blade.php
+        add @section('title', 'Login'), @push('css') and @push('js')
+
+37. Copy to bona/blank-static/css content  to ../public/assets/frontend/css/auth
+
+38. Setup login.blade.php @section('css')
+    @push('css')
+        <link href="{{ asset('assets/frontend/css/auth/styles.css') }}" rel="stylesheet">
+        <link href="{{ asset('assets/frontend/css/auth/responsive.css') }}" rel="stylesheet">
+    @endpush
+
+
+39. Copy  two sections to bona/blank-statik to login.blade.php in @section('content')
+
+40. copy <form> tag to @section('content') laravel form , login.blade.php to
+
+
+41. mm chose pour Register
+
+42. Add name home to ../Route/web.php
+        Route::get('/', function () {
+            return view('welcome');
+        })->name('home');
+
+43. delete neame home to route
+        Route::get('/home', 'HomeController@index')->name('');
+
+
+------------------------------Coments--------------------------------------------------
+1. Login page is in folder ../views/auth/login.blade.php
+
+_______________________________________Part 4 CREATE BLOG LAYOUT ______________________________________________________________________
+
+1. Copy folders images, plugin, css, js to Admin template in ../public/assets/backend
+
+2. Copy ../../views/layouts/frontend/app.blade.php to ../../views/layouts/backend/
+
+3. Delete section <font> , <style>, include in <body> and <script>
+
+4. copy admin-templete/index.html content of <section> body to ../backend/app.blade.php,
+
+5. Create folder  ../layouts/backend/partial
+
+6. Create ../layouts/backend/partial/topbar.blade.php
+
+7. Cut section <navbar></navbar> of ../backend/app.blade.php to ../partial/topbar.blade.php
+
+8. Include in app.blade.php => @include('layouts.backend.partial.topbar')
+
+7. Create ../layouts/backend/partial/sidebar.blade.php
+
+7. Cut section <left sidebar></sidebar> of ../backend/app.blade.php to ../partial/sidebar.blade.php
+
+8. Include in app.blade.php => @include('layouts.backend.partial.sidebar')
+
+9. Copy <Favicon>, ..., <AdminBSB Themes. You can choose a theme from css/themes instead of get all themes>
+    of ../Admin-theme/index.html to ../backend/app.blade.php
+
+10. Set-up asset('') =>  <link href="{{ asset('assets/backend/css/style.css') }}" rel="stylesheet">
+
+11. Copy all scripts of ../admin-template/index.html to ../backend/app.blade.php
+
+12. Set-up asset('') script  =>  <script src="{{ asset('assets/backend/plugins/node-waves/waves.js') }}"></script>
+
+13. Set-up file ../views/admin/dashboard.blade.php (delete <section> content) and @extends('layouts.backend.app')
+
+14. Cut  <div class="container-fluid> of ../backend/app.blade.php to ../views/admin/dashboard.blade.php
+
+15. Add @section('title', 'Dashboard', @push('css') and @push('js')
+
+16. Put in comment <Notifications> in ../pattial/sidebar.blade.php
+
+17. SetUp ../partial/sidebar.blade.php    =>  {{ Auth::user()->name }} and {{ Auth::user()->email }}
+
+18. Setup image asset in ../partial/sidebar.php => {{ asset('assets/backend/images/user.png') }}
+
+19. in ../partial/sidebar.php delete <li> offten home li
+
+20. Setup Link  in ../partial/sidebar.php <a href="{{ route('admin.dashboard') }}">
+
+
+______________________________________________ENd Part 4________________________________________________________________________
+
+
+_________________________Part 5 Define Backend Layout to Author Dashboard ANd Fixing Sidebar________________________________________________________________________
+1. Copy of
+
+        <a class="dropdown-item" href="{{ route('logout') }}"
+           onclick="event.preventDefault();
+                         document.getElementById('logout-form').submit();">
+            {{ __('Logout') }}
+        </a>
+
+        <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
+            @csrf
+        </form>
+
+        on ../layouts/app.blade.php to ../partial/sidebar.blade.php after
+        <li><a href="javascript:void(0);"><i class="material-icons">person</i>Profile</a></li>
+
+2. Set-up <li>
+        <li>
+            <a class="dropdown-item" href="{{ route('logout') }}"
+               onclick="event.preventDefault();
+                                         document.getElementById('logout-form').submit();">
+
+                <i class="material-icons">input</i>Sign Out
+            </a>
+
+            <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
+                @csrf
+            </form>
+
+        </li>
+
+
+3. Copy content ../views/admin.dashboard.blade.php to ../views/author.dashboard.blade.php
+
+4. Setup ../partial/sidebar.blade.php => Request
+    @if(Request::is('admin*'))
+
+        <li class="active">
+            <a href="{{ route('admin.dashboard') }}">
+                <i class="material-icons">home</i>
+                <span>Home</span>
+            </a>
+        </li>
+
+    @endif
+
+
+    @if(Request::is('admin*'))
+
+
+
+    @endif
+
+
+5. link
+     <li class="{{ Request::is('admin/dashboard') ? 'active' : '' }}">
+                        <a href="{{ route('admin.dashboard') }}">
+                            <i class="material-icons">home</i>
+                            <span>Home</span>
+                        </a>
+                    </li>
+
+
+6. Rename home by dashboard and Home => Dashboard
+
+________________________________________________________________________________________________________________________
+
+
+________________________________Part 6 Create Tag and show with database________________________________________________
+
+1. Make model Tag
+    $ php artisan make:model Tag -m
+
+2. Setup migration Create_Tag => ../migrations/create_tags_table.php
+        Add column name and slug
+
+3. Make migration
+    $ php artisan migrate
+
+4. Make admin Tag controller
+    $ php artisan make:controller Admin/TagController -r
+
+5. See list of routes
+    $ php artisan route:list or php artisan r:l
+
+6. Add Tag route in Admin route group | ../routes/web.php
+
+        code: Route::resource('tag', 'TagController');
+
+
+        /** Route Admin */
+
+        Route::group(['as'=>'admin.','prefix'=> 'admin', 'namespace'=>'Admin', 'middleware'=>['auth','admin']],
+            function (){
+            Route::get('dashboard', 'DashboardController@index')->name('dashboard');
+            Route::resource('tag', 'TagController');
+        });
+
+7. Create directory   ../resources/views/admin/tag/index.blade.php
+
+8. Setup ../resources/views/admin/tag/index.blade.php
+            ----------------------------------------------
+            @extends('layouts.backend.app')
+
+
+            @section('title', 'Tag')
+
+
+            @push('css')
+
+
+
+
+            @endpush
+
+
+
+            @section('content')
+
+
+
+            @endsection
+
+
+            @push('js')
+
+
+
+            @endpush
+            ---------------------------------------------
+
+
+ 9. Setup TagController.php => function index()
+               public function index()
+                {
+                    //
+                    return view('admin.tag.index');
+                }
+
+
+ 10. Setup add  blog <tag>../views/layouts/backend/partial/sidebar.blade.php
+
+                    <li class="{{ Request::is('admin/tag') ? 'active' : '' }}">
+                        <a href="{{ route('admin.tag.index') }}">
+                            <i class="material-icons">label</i>
+                            <span>Tag</span>
+                        </a>
+                    </li>
+
+
+10. Open ../Admin template/pages/tables/jquery-datatable.html
+
+11. Add asset to ../views/admin/tag/index.blade.php to @push('css')
+     <!-- JQuery DataTable Css -->
+        <link href="{{ asset('assets/backend/plugins/jquery-datatable/skin/bootstrap/css/dataTables.bootstrap.css') }}" rel="stylesheet">
+
+12. Copy <div class="container-fluid"> to @section('content') | ../views/admin/tag/index.blade.php
+
+13. (11) => @push('js')
+      <!-- Jquery DataTable Plugin Js -->
+          <script src="{{ asset('assets/backend/plugins/jquery-datatable/jquery.dataTables.js') }}"></script>
+          <script src="{{ asset('assets/backend/plugins/jquery-datatable/skin/bootstrap/js/dataTables.bootstrap.js') }}"></script>
+          <script src="{{ asset('assets/backend/plugins/jquery-datatable/extensions/export/dataTables.buttons.min.js') }}"></script>
+          <script src="{{ asset('assets/backend/plugins/jquery-datatable/extensions/export/buttons.flash.min.js') }}"></script>
+          <script src="{{ asset('assets/backend/plugins/jquery-datatable/extensions/export/jszip.min.js') }}"></script>
+          <script src="{{ asset('assets/backend/plugins/jquery-datatable/extensions/export/pdfmake.min.js') }}"></script>
+          <script src="{{ asset('assets/backend/plugins/jquery-datatable/extensions/export/vfs_fonts.js') }}"></script>
+          <script src="{{ asset('assets/backend/plugins/jquery-datatable/extensions/export/buttons.html5.min.js') }}"></script>
+          <script src="{{ asset('assets/backend/plugins/jquery-datatable/extensions/export/buttons.print.min.js') }}"></script>
+
+14.  CUt  <script src="{{ asset('assets/backend/js/pages/index.js') }}"></script>
+     to @push('js') in ../layouts/backend/app.blade.php
+     and copy this in ../views/admin/dashboard.blade.php
+
+15. (14)
+     <!-- Jquery CountTo Plugin Js -->
+        <script src="{{ asset('assets/backend/plugins/jquery-countto/jquery.countTo.js') }}"></script>
+
+        <!-- Morris Plugin Js -->
+        <script src="{{ asset('assets/backend/plugins/raphael/raphael.min.js') }}"></script>
+        <script src="{{ asset('assets/backend/plugins/morrisjs/morris.js') }}"></script>
+
+        <!-- ChartJs -->
+        <script src="{{ asset('assets/backend/plugins/chartjs/Chart.bundle.js') }}"></script>
+
+        <!-- Flot Charts Plugin Js -->
+        <script src="{{ asset('assets/backend/plugins/flot-charts/jquery.flot.js') }}"></script>
+        <script src="{{ asset('assets/backend/plugins/flot-charts/jquery.flot.resize.js') }}"></script>
+        <script src="{{ asset('assets/backend/plugins/flot-charts/jquery.flot.pie.js') }}"></script>
+        <script src="{{ asset('assets/backend/plugins/flot-charts/jquery.flot.categories.js') }}"></script>
+        <script src="{{ asset('assets/backend/plugins/flot-charts/jquery.flot.time.js') }}"></script>
+
+        <!-- Sparkline Chart Plugin Js -->
+        <script src="{{ asset('assets/backend/plugins/jquery-sparkline/jquery.sparkline.js') }}"></script>
+
+
+16. Setup ../view/admin/tag/index.blade.php => @push('js')
+
+    <!-- Custom Js -->
+        <script src="{{ asset('assets/backend/js/pages/tables/jquery-datatable.js') }}"></script>
+
+
+17. Create ../admin/tag/create.blade.php
+
+18. Setup function create()  |  ../Controllers/Admin/TagController.php
+     public function create()
+        {
+            //
+           return view('admin.tag.create');
+
+           }
+
+
+19. Setup (add *)    ../layouts/backend/partial/sidebar.blade.php
+        <li class="{{ Request::is('admin/tag*') ? 'active' : '' }}">
+
+
+20. Setup ../admin/tag/index.blade.php
+        <div class="block-header">
+            <a class="btn btn-primary waves-effect" href="{{ route('admin.tag.create') }}">
+                <i class="material-icons">add</i>
+                <span>Add new Tag</span>
+            </a>
+        </div>
+
+
+21. Copy  <!-- Vertical Layout | With Floating Label --> to ../admin-template/pages/forms/forms-example.html
+    (<div class="container-fluid">)
+    In ../admin/tag/create.blade.php ==> @push('content')
+
+
+22. Setup  ../admin/tag/create.blade.php ==> @push('content')
+           - Delete
+                <div class="block-header">
+                    <h2>FORM EXAMPLES</h2>
+                </div>
+
+           - Add
+                <h2>
+                   ADD NEW TAG
+                </h2>
+
+
+           - Costum
+                <div class="body">
+                    <form action="{{ route('admin.tag.store') }}" method="POST">
+                        @csrf
+
+                        <div class="form-group form-float">
+                            <div class="form-line">
+                                <input type="text" id="name" name="name" class="form-control">
+                                <label class="form-label">Tag Name</label>
+                            </div>
+                        </div>
+
+
+                        <a class="btn btn-danger m-t-15 waves-effect">BACK</a>
+
+                        <button type="button" class="btn btn-primary m-t-15 waves-effect">SAVE</button>
+                    </form>
+                </div>
+
+
+
+23. Setup ../tag/create.blade.php => type = submit
+     <button type="submit" class="btn btn-primary m-t-15 waves-effect">SAVE</button>
+
+
+
+24. Setup function store(Request $request)  => ../controllers/TagController.php
+
+
+    public function store(Request $request)
+        {
+            //
+            $this->validate($request, [
+               'name' => 'required'
+            ]);
+
+            //return $request;
+
+            $tag = new Tag();
+            $tag->name = $request->name;
+            $tag->slug = str_slug($request->name);
+            $tag->save();
+
+            return redirect()->back();
+        }
+
+
+25.  Toastr
+    1- Link
+        https://github.com/brian2694/laravel-toastr
+
+    2- Install
+        $ composer require brian2694/laravel-toastr
+
+    3- Costum option
+        $ php artisan vendor:publish
+
+    4- Choice : 2
+
+    5- Copy
+        <!-- Toastr -->
+        <link rel="stylesheet" href="http://cdn.bootcss.com/toastr.js/latest/css/toastr.min.css">
+
+        To ../backend/app.blade.php => push('css')
+
+    6- Copy
+        <!-- Toastr  -->
+        <script src="http://cdn.bootcss.com/toastr.js/latest/js/toastr.min.js"></script>
+        {!! Toastr::message() !!}
+
+         To ../backend/app.blade.php => push('js')
+
+    7- Copy
+        <!-- Toastr -->
+        <link rel="stylesheet" href="http://cdn.bootcss.com/toastr.js/latest/css/toastr.min.css">
+
+        To ../frontend/app.blade.php ==> <head>
+
+    8- Copy
+        <!-- Toastr  -->
+        <script src="http://cdn.bootcss.com/toastr.js/latest/js/toastr.min.js"></script>
+        {!! Toastr::message() !!}
+
+         To ../frontend/app.blade.php
+
+
+
+26. Config option Toastr => ../config/toastr.php
+        "closeButton" => true,
+        "debug" => false,
+        "newestOnTop" => true,
+        "progressBar" => true,
+
+27. Setup ../TagController.php => function store(Request $request)
+        {
+
+            Toastr::success('Tag Succesfully Saved', 'Success');
+
+            return redirect()->route('admin.tag.index');
+        }
+
+
+28. Add s to http =>../view/layouts/backend/app.bladde.php
+        <!-- Toastr -->
+        <link rel="stylesheet" href="https://cdn.bootcss.com/toastr.js/latest/css/toastr.min.css">
+
+        <!-- Toastr  -->
+        <script src="https://cdn.bootcss.com/toastr.js/latest/js/toastr.min.js"></script>
+
+
+29. Setup ../view/layouts/backend/app.bladde.php
+        <script>
+                @if($errors->any())
+                    @foreach($errors->all() as $error)
+                        toastr.error('{{ $error }}', 'Error', {
+                            closeButton:true,
+                            progressBar:true,
+                        });
+                    @endforeach
+
+                @endif
+            </script>
+
+30. Setup ../TagController => function index()
+           public function index()
+              {
+                  //
+                  $tags = Tag::latest()->get();
+                  return view('admin.tag.index', compact('tags'));
+              }
+
+
+31. Setup ../views/admin/tag/index.blade.php
+        1. tr
+            <tr>
+                <th>ID</th>
+                <th>Name</th>
+                <th>Created At</th>
+                <th>Updated At</th>
+            </tr>
+
+
+        2. Delete <tbody>
+
+        3. costum <tbody>
+            <tbody>
+                @foreach($tags as $key=>$tag)
+                    <tr>
+                        <td>{{ $key + 1 }}</td>
+                        <td>{{ $tag->name }}</td>
+                        <td>{{ $tag->created_at }}</td>
+                        <td>{{ $tag->updated_at }}</td>
+                    </tr>
+
+                @endforeach
+            </tbody>
+
+         4. Rename : ALL TAGS
+                    <h2>
+                        EXPORTABLE TABLE
+                    </h2>
+
+         5. Delete
+                     <ul class="header-dropdown m-r--5">
+                        <li class="dropdown">
+                            <a href="javascript:void(0);" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
+                                <i class="material-icons">more_vert</i>
+                            </a>
+                            <ul class="dropdown-menu pull-right">
+                                <li><a href="javascript:void(0);">Action</a></li>
+                                <li><a href="javascript:void(0);">Another action</a></li>
+                                <li><a href="javascript:void(0);">Something else here</a></li>
+                            </ul>
+                        </li>
+                    </ul>
+
+-----------------------------Comments--------------------------------------------------
+
+1. Mettre data-table en français*
+2. customiser ses bouttons , print-excel-...
+3. Tag  champ image
+
+4. https://codeseven.github.io/toastr/demo.html
+
+__________________________________________________________________________________________________________________________
+
+
+
+____________________________PART 7 -  Tag Edit and Delete ______________________________________________________________
+
+1. Add <th>Action> at <thead> and <tfoot> | ../tag/index.blade.php
+      <thead>
+        <tr>
+            <th>ID</th>
+            <th>Name</th>
+            <th>Created At</th>
+            <th>Updated At</th>
+            <th>Action</th>
+        </tr>
+        </thead>
+        <tfoot>
+        <tr>
+            <th>ID</th>
+            <th>Name</th>
+            <th>Created At</th>
+            <th>Updated At</th>
+            <th>Action</th>
+        </tr>
+        </tfoot>
+
+
+
+2. Add <td>Action content    | ../tag/index.blade.php
+
+     <td class="text-center">
+        <a href="{{ route('admin.tag.edit', $tag->id) }}" class="btn btn-info waves-effect">
+            <i class="material-icons">edit</i>
+        </a>
+
+        <a href="{{ route('admin.tag.edit', $tag->id) }}" class="btn btn-danger waves-effect">
+            <i class="material-icons">delete</i>
+        </a>
+
+    </td>
+
+3. Create edit page => ../tag/edit.blade.php (Copy of create.blade.php)
+
+4. Set up edit function edit ()   | ../controllers/TagController.php
+        public function edit($id)
+            {
+                //
+
+                $tag = Tag::find($id);
+                return view('admin.tag.edit', compact('tag'));
+
+                //return $tag = Tag::find($id);
+                //return $id;
+
+            }
+
+ 5. Setup form action=""    and add @method="PUT"      | ../admin/tag/edit.blade.php
+
+      <form action="{{ route('admin.tag.update', $tag->id) }}" method="POST">
+            @csrf
+            @method('PUT')
+
+
+ 6. Setup function update   | ../controllers/TagController.php
+
+            public function update(Request $request, $id)
+            {
+                //
+
+                $tag = Tag::find($id);
+                $tag->name = $request->name;
+                $tag->slug = str_slug($request->name);
+                $tag->save();
+
+                Toastr::success('Tag Succesfully Updated', 'Success');
+
+                return redirect()->route('admin.tag.index');
+
+
+                //return $request;
+            }
+
+7. Deleted
+
+        - Link :
+            https://sweetalert2.github.io/
+
+8.  Copy scrpit to ../admin/tag/edit.blade.php
+
+    <!--  sweetalert2@7.33.1   -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@7.33.1/dist/sweetalert2.all.min.js"></script>
+
+
+9. Costum delete button   | ../admin/tag/index.blade.php
+
+       <button class="btn btn-danger waves-effect" type="button" onclick="deleteTag({{ $tag->id }})">
+           <i class="material-icons">delete</i>
+
+       </button>
+
+       <form id="delete-form-{{ $tag->id }}" action="{{ route('admin.tag.destroy', $tag->id) }}" method="POST" style="display: none;">
+           @csrf
+           @method('DELETE')
+
+       </form>
+
+
+10. Costum  | ../admin/tag/index.blade.php
+
+    <script>
+            function deleteTag() {
+                const swalWithBootstrapButtons = Swal.mixin({
+                    confirmButtonClass: 'btn btn-success',
+                    cancelButtonClass: 'btn btn-danger',
+                    buttonsStyling: false,
+                })
+
+                swalWithBootstrapButtons({
+                    title: 'Are you sure?',
+                    text: "You won't be able to revert this!",
+                    type: 'warning',
+                    showCancelButton: true,
+                    confirmButtonText: 'Yes, delete it!',
+                    cancelButtonText: 'No, cancel!',
+                    reverseButtons: true
+                }).then((result) => {
+                    if (result.value) {
+                        swalWithBootstrapButtons(
+                            'Deleted!',
+                            'Your file has been deleted.',
+                            'success'
+                        )
+                    } else if (
+                        // Read more about handling dismissals
+                        result.dismiss === Swal.DismissReason.cancel
+                    ) {
+                        swalWithBootstrapButtons(
+                            'Cancelled',
+                            'Your imaginary file is safe :)',
+                            'error'
+                        )
+                    }
+                })
+            }
+        </script>
+
+
+
+11.
+
+     if (result.value) {
+            event.preventDefault();
+            document.getElementById('delete-form-'+id).submit();
+        } else if (
