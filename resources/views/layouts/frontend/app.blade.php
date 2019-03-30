@@ -47,6 +47,9 @@
 
     <title>{{ config('app.name', 'Laravel') }} -  @yield('title')</title>
 
+    <!--      Notifications       -->
+    <link rel="stylesheet" href="http://cdn.bootcss.com/toastr.js/latest/css/toastr.min.css">
+
     <!-- Scripts -->
 
 
@@ -91,6 +94,9 @@
     <script src="{{ asset('assets/frontend/js/jquery.sticky.js') }}"></script>
     <script src="{{ asset('assets/frontend/js/main.js') }}"></script>
 
+    <!--      Notifications       -->
+    <script src="http://cdn.bootcss.com/toastr.js/latest/js/toastr.min.js"></script>
+    {!! Toastr::message() !!}
     @stack('js')
 
 </body>
