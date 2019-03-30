@@ -24,7 +24,10 @@
     <div class="container-fluid">
         <div class="block-header">
             <h2>
-                JQUERY DATATABLES
+                <a href="{{ route('admin.tag.create') }}" class="btn btn-primary">
+                    <i class="material-icons">add</i>
+                    <span>Add new Tag</span>
+                </a>
 
             </h2>
         </div>
