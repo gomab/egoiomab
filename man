@@ -920,6 +920,150 @@ ____________________________PART 7 -  Tag Edit and Delete ______________________
 11.
 
      if (result.value) {
-            event.preventDefault();
+            //event.preventDefault();
             document.getElementById('delete-form-'+id).submit();
         } else if (
+
+
+
+12. Set up delete function
+
+
+_______________________________________________________________________________________________________________________________________________
+
+---------------------------------------PART 8 Create and show Category----------------------------------------------------------
+
+1. Install image intervention
+
+  http://image.intervention.io/
+
+  $ composer require intervention/image
+
+2. Make Category model
+    $ php artisan make:model Category -m
+
+3. Make Category Controller
+    $ php artisan make:controller Admin/CategoryController -r
+
+4. Set up /../migrations/create-categories
+
+                    $table->string('name');
+                    $table->string('slug');
+                    $table->string('image')->default('default.png');
+
+
+5. Migrate
+    $ php artisan migrate
+
+
+6. Create ../resources/views/admin/category (copy ./tag)
+
+7. Set up category route
+    /** Route admin */
+
+    Route::group(['as'=>'admin.','prefix'=> 'admin', 'namespace'=>'Admin', 'middleware'=>['auth','admin']],
+        function (){
+            Route::get('dashboard', 'DashboardController@index')->name('dashboard');
+            //  Route::resource('tag', 'TagController');
+            Route::resource('tag','TagController');
+        --> Route::resource('category', 'CategoryController', compact('categories');
+        });
+
+ 8. Setup ../Categorycontroller -> function index ()
+
+       public function index()
+        {
+            $categories = Category::latest()->get();
+
+            return view('admin.category.index');
+        }
+
+
+ 9. Setup ../admin/category/index.blade.php [rename Tag -> Category]
+
+ 10. Add bloc --> to /layout/backend/partial/sidebar.blade.php
+         <li class="{{ Request::is('admin/category*') ? 'active' : '' }}">
+            <a href="{{ route('admin.category.index') }}">
+                <i class="material-icons">apps</i>
+                <span>Category</span>
+            </a>
+        </li>
+
+
+ 11. Validate controle function store(Request $request) [CategoryController.php]
+
+    $this->validate($request, [
+                'name'  => 'required|unique:categories',
+                'image' => 'required|mimes:jpeg,bmp,png,jpg'
+            ]);
+
+
+ 12. Storage link
+    $ php artisan storage:link
+
+ 13. Setup functon store category
+
+    public function store(Request $request)
+        {
+            //return $request;
+
+            $this->validate($request, [
+                'name'  => 'required|unique:categories',
+                'image' => 'required|mimes:jpeg,bmp,png,jpg'
+            ]);
+
+            //Get form image
+            $image =$request->file('image');
+            $slug = str_slug($request->name);
+            if(isset($image)){
+                //make unique name for image
+                $currentDate = Carbon::now()->toDateString();
+                $imagename = $slug.'-'.$currentDate.'-'.uniqid().'.'.$image->getClientOriginalExtension();
+
+                //Check category dir is exists
+                if (!Storage::disk('public')->exists('category')){
+                    Storage::disk('public')->makeDirectory('category');
+                }
+
+                //resize image for category and upload
+                $category = Image::make($image)->resize(1600,479)->save();
+                Storage::disk('public')->put('category/'.$imagename,$category);
+
+                //Check category slider dir is exists
+                if (!Storage::disk('public')->exists('category/slider')){
+                    Storage::disk('public')->makeDirectory('category/slider');
+                }
+
+                //resize image for category slider and upload
+                $slider = Image::make($image)->resize(500,333)->save();
+                Storage::disk('public')->put('category/slider/'.$imagename,$slider);
+
+
+            }else{
+                $imagename = "default.png";
+            }
+
+            $category        = new Category();
+            $category->name  = $request->name;
+            $category->slug  = $slug;
+            $category->image = $imagename;
+            $category->save();
+
+            Toastr::success('Category créé avec succes :)', 'Success');
+
+            return redirect()->route('admin.category.index');
+
+        }
+
+
+
+
+_______________________________________________________________________________________________________________________________________________
+
+---------------------------------------ENd PART 8 Create and show Category----------------------------------------------------------
+
+
+
+_______________________________________________________________________________________________________________________________________________
+
+---------------------------------------PART 9 Edit Category----------------------------------------------------------

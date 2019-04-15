@@ -27,6 +27,7 @@ Route::group(['as'=>'admin.','prefix'=> 'admin', 'namespace'=>'Admin', 'middlewa
         Route::get('dashboard', 'DashboardController@index')->name('dashboard');
         //  Route::resource('tag', 'TagController');
         Route::resource('tag','TagController');
+        Route::resource('category', 'CategoryController');
     });
 
 /** End Route admin  */
