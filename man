@@ -1150,3 +1150,161 @@ ________________________________________________________________________________
 
 
 ---------------------------------------PART 10 Delete Category----------------------------------------------------------
+public function destroy($id)
+    {
+        //return $category = Category::find($id);
+
+        $category = Category::find($id);
+
+        if(Storage::disk('public')->exists('category/'.$category->image)){
+            Storage::disk('public')->delete('category/'.$category->image);
+        }
+
+        if(Storage::disk('public')->exists('category/slider/'.$category->image)){
+            Storage::disk('public')->delete('category/slider/'.$category->image);
+        }
+
+        $category->delete();
+
+        Toastr::success('Categorie supprimée avec succes :)', 'Success');
+
+        return redirect()->back();
+    }
+
+
+--------------------------------------- End PART 10 Delete Category----------------------------------------------------------
+
+---------------------------------------PART 11 - Many to many relationship between ----------------------------------------------------------
+
+1. Create post Model
+
+    $ php artisan make:model Post -m
+
+
+2. Migration category_post
+    $ php make:migration create_category_post_table
+
+3. Migration post_tag
+    $ php make:migration create_post_tag_table
+
+
+4. Setup Post migration
+
+        public function up()
+        {
+            Schema::create('posts', function (Blueprint $table) {
+                $table->increments('id');
+                $table->integer('user_id')->unsigned();
+                $table->string('title');
+                $table->string('slug')->unique();
+                $table->string('image')->default('default.png');
+                $table->text('body');
+                $table->integer('view_count')->default(0);
+                $table->boolean('status')->default(false);
+                $table->boolean('is_approved')->default(false);
+                $table->foreign('user_id')
+                      ->references('id')->on('users')
+                      ->onDelete('cascade');
+                $table->timestamps();
+            });
+        }
+
+5. Setup migration create_category_post_table
+        public function up()
+        {
+            Schema::create('category_post', function (Blueprint $table) {
+                $table->increments('id');
+                $table->integer('post_id');
+                $table->integer('category_id');
+                $table->timestamps();
+            });
+        }
+
+6. Setup migration create_post_tag_table
+        public function up()
+        {
+            Schema::create('post_tag', function (Blueprint $table) {
+                $table->increments('id');
+                $table->integer('post_id');
+                $table->integer('tag_id');
+                $table->timestamps();
+            });
+        }
+
+7. Migrate
+    $ php artisan migrate
+
+
+8. ../User.php ==>
+
+       //Bind Post model
+
+        /**
+         * @return \Illuminate\Database\Eloquent\Relations\HasMany
+         */
+        public function posts(){
+            return $this->hasMany('App\Post');
+        }
+
+9. Setup Post model
+
+    //UN et un seul user
+        /**
+         * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+         */
+        public function user(){
+            return $this->belongsTo('App\User');
+        }
+
+        //Une ou plusieurs catégories
+
+        /**
+         * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+         */
+        public function categories(){
+            return $this->belongsToMany('App\Category')->withTimestamps();
+        }
+
+
+        /**
+         * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+         */
+        public function tags(){
+            return $this->belongsToMany('App\Tag')->withTimestamps();
+        }
+
+
+10. Setup Category Model
+     /**
+         * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+         */
+        public function posts(){
+            return $this->belongsToMany('App\Post')->withTimestamps();
+        }
+
+11. Setup Tag model
+     /**
+         * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+         */
+        public function posts(){
+            return $this->belongsToMany('App\Post')->withTimestamps();
+        }
+
+12.
+    $ php artisan tinker
+
+    $ App\Post::find(1)->categories
+
+    $  App\Post::find(1)->user
+
+    $ App\Post::find(1)
+
+    $ App\User::find(1)->posts
+
+    $ App\User::find(1)
+
+
+---------------------------------------End PART 11 - Many to many relationship between ----------------------------------------------------------
+
+
+---------------------------------------PART 12 - Show Posts with datatable ----------------------------------------------------------

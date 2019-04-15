@@ -37,4 +37,13 @@ class User extends Authenticatable
     public function role(){
         return $this->belongsTo('App\Role');
     }
+
+    //Bind Post model
+
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function posts(){
+        return $this->hasMany('App\Post');
+    }
 }
