@@ -1354,8 +1354,6 @@ Afficher aussi le nbre des post publié et non publié
 ---------------------------------------PART 13 - Create Post----------------------------------------------------------
 
 
----------------------------------------End PART 13 - Create Post----------------------------------------------------------
-
 1. Setup PostController.php
 
        public function create()
@@ -1612,3 +1610,82 @@ Afficher aussi le nbre des post publié et non publié
 
 1. Costum msg error notification
 2. Si article publié pendant la création, votre atticle a été publié sinon ...
+3. Sous catégorie article publié et non publié
+
+---------------------------------------End PART 13 - Create Post----------------------------------------------------------
+
+
+---------------------------------------PART 15 - Edit Post----------------------------------------------------------
+1. Setup public function edit() --> PostController.php
+
+       public function edit(Post $post)
+        {
+            $categories = Category::all();
+            $tags       = Tag::all();
+            return view('admin.post.edit', compact('post','categories', 'tags'));
+        }
+
+
+2. Copy create.blade.php to edit.blade.php
+
+3. value title
+
+     <div class="form-group form-float">
+         <div class="form-line">
+             <input type="text" id="name" name="title" class="form-control" value="{{ $post->title }}">
+             <label class="form-label">Titre de l'article</label>
+         </div>
+     </div>
+
+
+
+4. value status
+
+    <div class="form-group">
+        <input type="checkbox" id="publish" class="filled-in" name="status" value="1" {{ $post->status == true ? 'checked' : '' }}>
+        <label for="publish">Publié</label>
+    </div>
+
+
+
+5. Value Category
+
+    <select name="categories[]" id="category" class="form-control show-tick" data-live-search="true" multiple>
+        @foreach($categories as $category)
+            <option
+                    @foreach($post->categories as $postCategory)
+                            {{ $postCategory->id == $category->id ? 'selected' : '' }}
+                    @endforeach
+                    value="{{ $category->id }}">{{ $category->name }}</option>
+
+        @endforeach
+    </select>
+
+
+6. Value Tag
+
+    <select name="tags[]" id="tag" class="form-control show-tick" data-live-search="true" multiple>
+        @foreach($tags as $tag)
+            <option
+                    @foreach($post->tags as $postTag)
+                    {{ $postTag->id == $tag->id ? 'selected' : '' }}
+                    @endforeach
+
+                    value="{{ $tag->id }}">{{ $tag->name }}</option>
+
+        @endforeach
+    </select>
+
+
+7. Value Body
+
+     <div class="body">
+        <textarea name="body" id="tinymce" cols="30" rows="10">
+            {{ $post->body }}
+        </textarea>
+    </div>
+
+
+8.
+
+
