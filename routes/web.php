@@ -28,6 +28,7 @@ Route::group(['as'=>'admin.','prefix'=> 'admin', 'namespace'=>'Admin', 'middlewa
         //  Route::resource('tag', 'TagController');
         Route::resource('tag','TagController');
         Route::resource('category', 'CategoryController');
+        Route::resource('post', 'PostController');
     });
 
 /** End Route admin  */

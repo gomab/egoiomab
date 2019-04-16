@@ -38,7 +38,8 @@
                 <div class="card">
                     <div class="header">
                         <h2>
-                           Tags
+                           ALL TAGS
+                            <span class="badge bg-blue">{{ $tags->count() }}</span>
                         </h2>
                         <ul class="header-dropdown m-r--5">
                             <li class="dropdown">
@@ -60,6 +61,7 @@
                                 <tr>
                                     <th>ID</th>
                                     <th>Nom</th>
+                                    <th>Nbre Posts</th>
                                     <th>Date de création</th>
                                     <th>Date de MAJ</th>
                                     <th>Action</th>
@@ -69,6 +71,7 @@
                                 <tr>
                                     <th>ID</th>
                                     <th>Nom</th>
+                                    <th>Nbre Posts</th>
                                     <th>Date de création</th>
                                     <th>Date de MAJ</th>
                                     <th>Action</th>
@@ -80,6 +83,7 @@
                                        <tr>
                                            <td>{{ $key + 1 }}</td>
                                            <td>{{ $tag->name }}</td>
+                                           <td><span class="badge bg-primary">{{ $tag->posts->count() }}</span></td>
                                            <td>{{ $tag->created_at }}</td>
                                            <td>{{ $tag->updated_at }}</td>
                                            <td class="text-center">

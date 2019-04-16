@@ -1308,3 +1308,52 @@ public function destroy($id)
 
 
 ---------------------------------------PART 12 - Show Posts with datatable ----------------------------------------------------------
+
+1. Make PostController
+    $ php artisan make:controller Admin/PostController --model=Post
+
+
+2. Make Post route
+
+    Route::group(['as'=>'admin.','prefix'=> 'admin', 'namespace'=>'Admin', 'middleware'=>['auth','admin']],
+        function (){
+            Route::get('dashboard', 'DashboardController@index')->name('dashboard');
+            //  Route::resource('tag', 'TagController');
+            Route::resource('tag','TagController');
+            Route::resource('category', 'CategoryController');
+       ==>  Route::resource('post', 'PostController');
+        });
+
+3. ../views/layouts/partial/sidebar.blade.php
+
+        <li class="{{ Request::is('admin/post*') ? 'active' : '' }}">
+            <a href="{{ route('admin.post.index') }}">
+                <i class="material-icons">library_books</i>
+                <span>Posts</span>
+            </a>
+        </li>
+
+4. Copy ../views/admin/category and rename to post
+
+5. Costumer post/index.blade.php
+
+6. setup category/index.blade.php and tag/index
+            ALL POSTS
+            <span class="badge bg-blue">{{ $posts->count() }}</span>
+
+
+           <td><span class="badge bg-primary">{{ $tag->posts->count() }}</span></td>
+
+
+
+-------
+Afficher aussi le nbre des post publié et non publié
+
+---------------------------------------End PART 12 - Show Posts with datatable ----------------------------------------------------------
+
+---------------------------------------PART 13 - Create Post----------------------------------------------------------
+
+
+---------------------------------------End PART 13 - Create Post----------------------------------------------------------
+
+
